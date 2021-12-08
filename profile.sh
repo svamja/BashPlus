@@ -1,6 +1,7 @@
 #!/bin/bash
 
-REPO_PATH=/var/www/BashPlus
+REPO_PATH="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 SCRIPT_PATH=$REPO_PATH/profile.sh
 
 export PATH=$PATH:.:$REPO_PATH/bin:/usr/local/sbin
