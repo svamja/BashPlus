@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+const moment = require('moment');
+
+async function main() {
+    process.argv.shift();
+    process.argv.shift();
+    let ts = null;
+    let dt;
+    if(process.argv.length) {
+        ts = parseInt(process.argv[0]);
+        if(ts < 2000000000) {
+            ts *= 1000;
+        }
+    }
+
+    ts = ts || new Date().getTime();
+
+    let format = 'YYYY-MM-DD HH:mm:ss.SSS';
+    dt = moment(ts).format(format);
+    console.log(ts, dt);
+}
+
+main();
+

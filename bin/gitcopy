@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+const Commands = require('../node/Commands');
+
+
+async function main() {
+
+    await Commands.runCommand('gitcopy');
+
+}
+
+main();
+

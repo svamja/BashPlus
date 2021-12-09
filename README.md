@@ -1,6 +1,12 @@
 # BashPlus
 
-Simple Bash Profile using Bash and NodeJS
+Simple bash profile and command line utilities using Bash and NodeJS
+
+* `cd --` - switch to recent directory
+* `getcolls` - download and restore mongodb collections
+* `ts` - convert unix or JS timestamp to formatted date
+* `getts` - read ISO date input to JS timestamp
+* `gitcopy` - copy uncommitted files to remote server
 
 ### Usage
 
@@ -13,9 +19,10 @@ Clone the repository and source the "profile.sh" at the end of ".profile" file
 If you change the clone path, please update the same above.
 
 
-### Env file format
+### env file format
 
-File name: .env.json
+File name: `.env.json`
+
 Sample format:
 
     {
@@ -25,6 +32,13 @@ Sample format:
                 "username": "ubuntu"
             }
         },
+        "gitcopies": [
+            {
+                "server": "server01"
+                "from": "/local/path/to/project1",
+                "to": "/remote/path/to/project1",
+            }
+        ],
         "local": {
             "tmpdir": "/users/admin/tmp"
         },
@@ -38,9 +52,23 @@ Sample format:
 
 ### Commands
 
+    getcolls collection1 collection2 ..
     getcolls --server server01 --db testdb collection1 collection2 ..
 
-this will export the collections on server01 server and restore the same on local mongodb database
+This will export the collections from given server and restore the same on local mongodb database. If omitted, `server` and `database` are taken from `defaults` of `.env.json` file.
 
+    ts 1635766500000
+
+Prints formatted date for the given timestamp
+
+    getts 2021-01-01
+    getts 2021-01-01 17:05:05
+
+Prints Javascript timestamp (milliseconds since epoch) for a given date
+
+    gitcopy
+
+Copies (uploads) the uncommitted changed files to remote server, based on the current directory.
+The current directory must match the `from` argument in the `gitcopies`.
 
 

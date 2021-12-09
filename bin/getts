@@ -1,0 +1,31 @@
+#!/usr/bin/env node
+
+const moment = require('moment');
+
+
+async function main() {
+    process.argv.shift();
+    process.argv.shift();
+    let date_input = process.argv.join(' ');
+
+    let ts;
+    if(date_input) {
+        if (!moment(date_input, moment.ISO_8601).isValid()) {
+            console.log('usage: getts ' + moment().format('YYYY-MM-DD'));
+            console.log('usage: getts ' + moment().format('YYYY-MM-DD HH:mm'));
+            console.log('usage: getts ' + moment().format('YYYY-MM-DD HH:mm:ss'));
+            return;
+        }
+        ts = moment(date_input).valueOf();
+    }
+    else {
+        ts = moment().valueOf();
+    }
+
+    let dt = moment(ts).format('YYYY-MM-DD HH:mm:ss');
+    console.log(ts, dt);
+
+}
+
+main();
+
