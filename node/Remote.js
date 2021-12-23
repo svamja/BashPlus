@@ -1,5 +1,6 @@
 const env = require('../.env.json');
 const { NodeSSH } = require('node-ssh');
+const path = require('path');
 const homedir = require('os').homedir();
 
 const Remote = {
@@ -70,7 +71,72 @@ const Remote = {
 
     },
 
-    async uploadFiles(serverName, remoteDir, files) {
+    getmap(serverName) {
+        let currDir = process.cwd();
+        for(let doc of env.gitcopies) {
+            if(serverName && serverName != doc.server) {
+                continue;
+            }
+            if(doc.from == currDir) {
+                return doc;
+            }
+        }
+    },
+
+    // cpfrom utility
+    async cpfrom(args, options) {
+        let serverName = args.shift();
+        let files = args;
+        return await this.downloadFiles(serverName, files);
+    },
+
+    async downloadFiles(serverName, files) {
+
+        console.log('downloading files from', serverName);
+        console.log(' > ' + files.join("\n > "));
+
+        const ssh = await this.connect(serverName);
+
+        // Build local and remote maps
+        let map = this.getmap(serverName);
+        let docs = [];
+        for(let file of files) {
+            let local = file;
+            let remote = file;
+            if(file[0] == '/') {
+                local = path.basename(file);
+            }
+            else {
+                if(map) {
+                    remote = map.to + '/' + file;
+                }
+                else {
+                    remote = process.cwd() + '/' + file;
+                }
+            }
+            docs.push({ local, remote });
+        }
+
+        try {
+            for(let doc of docs) {
+                await ssh.getFile(doc.local, doc.remote);
+            }
+        }
+        catch(exception) {
+            console.log(exception);
+        }
+        ssh.dispose();
+
+    },
+
+    // cpto utility
+    async cpto(args, options) {
+        let serverName = args.shift();
+        let files = args;
+        return await this.uploadFiles(serverName, files);
+    },
+
+    async uploadFiles(serverName, files) {
 
         console.log('uploading files to', serverName);
         console.log(' > ' + files.join("\n > "));
@@ -78,21 +144,40 @@ const Remote = {
         const ssh = await this.connect(serverName);
 
         // Build local and remote maps
+        let map = this.getmap(serverName);
+        let defaultDir = env.servers[serverName].chdir || env.defaults.chdir;
         let docs = [];
         for(let file of files) {
-            docs.push({ local: file, remote: remoteDir + '/' + file });
+            let local = file;
+            let remote = file;
+            if(file[0] == '/') {
+                remote = defaultDir + '/' + path.basename(file);
+            }
+            else {
+                if(map) {
+                    remote = map.to + '/' + file;
+                }
+                else {
+                    remote = defaultDir + '/' + path.basename(file);
+                }
+            }
+            docs.push({ local, remote });
         }
+        // let docs = [];
+        // for(let file of files) {
+        //     docs.push({ local: file, remote: remoteDir + '/' + file });
+        // }
 
         try {
             await ssh.putFiles(docs);
         }
         catch(exception) {
-            return { status: 'error', exception };
+            console.log(exception);
         }
         ssh.dispose();
-        return { status: "success" }
 
     },
+
 
 }
 

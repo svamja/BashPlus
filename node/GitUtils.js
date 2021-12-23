@@ -48,7 +48,7 @@ const GitUtils = {
             console.log('no files changed!');
             return;
         }
-        let result = await Remote.uploadFiles(map.server, map.to, files);
+        let result = await Remote.uploadFiles(map.server, files);
         console.log('done');
 
     }

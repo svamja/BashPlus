@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[ "$(uname)" == "Darwin" ] && open $PWD && exit 0;
+
+which nemo > /dev/null 2>&1 && nemo $PWD && exit 0;
+
+which caja > /dev/null 2>&1 && caja $PWD && exit 0;
+

@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 const Commands = require('../node/Commands');
-
+const path = require('path');
 
 async function main() {
 
-    await Commands.runCommand('gitcopy');
+    await Commands.runCommand(path.basename(__filename));
 
 }
 
